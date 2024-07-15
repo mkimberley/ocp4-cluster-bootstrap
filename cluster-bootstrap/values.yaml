@@ -1,0 +1,46 @@
+machineSet:
+  name: example
+  clusterName: ocp-cluster-name
+  googleProjectId: google-project-id
+  computeId: unique-compute-id-in-machinset
+  computeRegion: gco-region
+  machineType: n2-standard-8
+  minReplicas: 1
+  maxReplicas: 12
+  availabilityZones:
+  - c
+  - b
+  - a
+  
+identityProviders:
+  - name: githubidp
+    mappingMethod: claim
+    type: GitHub
+    github:
+      clientID: github-client-id
+      clientSecret:
+        name: github-secret
+      organizations:
+        - github-org
+  - name: htpasswd
+    mappingMethod: claim
+    type: HTPasswd
+    htpasswd:
+      secretName: htpasswd-secret
+      filePath: htpasswd-file
+  - name: Microsoft_Entra_ID
+    mappingMethod: claim
+    type: OpenID
+    openID:
+      clientID: entra-client-id
+      clientSecret:
+        name: openid-client-secret
+      extraScopes:
+      - email
+      - profile
+      extraAuthorizeParameters:
+        include_granted_scopes: true
+      claims:
+        preferredUsername:
+        - upn
+      issuer: "issuer-url"

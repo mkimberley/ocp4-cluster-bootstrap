@@ -1,0 +1,61 @@
+{{- with .Values.machineSet }}
+{{- range .availabilityZones }}
+---
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  name: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-worker-{{ . }}
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}
+      machine.openshift.io/cluster-api-machineset: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-worker-{{ . }}
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-worker-{{ . }}
+    spec:
+      lifecycleHooks: {}
+      metadata: {}
+      providerSpec:
+        value:
+          machineType: {{ $.Values.machineSet.machineType }}
+          userDataSecret:
+            name: worker-user-data
+          deletionProtection: false
+          networkInterfaces:
+            - network: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-network
+              subnetwork: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-worker-subnet
+          credentialsSecret:
+            name: gcp-cloud-credentials
+          zone: {{ $.Values.machineSet.computeRegion }}-{{ . }}
+          canIPForward: false
+          metadata:
+            creationTimestamp: null
+          projectID: {{ $.Values.machineSet.googleProjectId }}
+          region: {{ $.Values.machineSet.computeRegion }}
+          kind: GCPMachineProviderSpec
+          disks:
+            - autoDelete: true
+              boot: true
+              image: {{ $.Values.machineSet.image }}
+              labels: {}
+              sizeGb: 128
+              type: pd-standard
+          tags:
+            - {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-worker
+          serviceAccounts:
+            - email: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-w@{{ $.Values.machineSet.googleProjectId }}.iam.gserviceaccount.com
+              scopes:
+                - 'https://www.googleapis.com/auth/cloud-platform'
+          apiVersion: machine.openshift.io/v1beta1
+          shieldedInstanceConfig: {}
+{{- end }}
+{{- end }}

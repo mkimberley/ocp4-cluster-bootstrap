@@ -1,0 +1,23 @@
+{{- with .Values.machineSet }}
+{{- range .availabilityZones }}
+---
+apiVersion: autoscaling.openshift.io/v1beta1
+kind: MachineAutoscaler
+metadata:
+  generation: 1
+  managedFields:
+    - apiVersion: autoscaling.openshift.io/v1beta1
+      manager: cluster-autoscaler-operator
+      operation: Update
+      subresource: status
+  name: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-worker-{{ . }}
+  namespace: openshift-machine-api
+spec:
+  maxReplicas: {{ $.Values.machineSet.maxReplicas }}
+  minReplicas: {{ $.Values.machineSet.minReplicas }}
+  scaleTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: {{ $.Values.machineSet.clusterName }}-{{ $.Values.machineSet.computeId }}-worker-{{ . }}
+{{- end }}
+{{- end }}

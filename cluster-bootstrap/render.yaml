@@ -1,0 +1,277 @@
+---
+# Source: db-hackathon-2024/templates/httpasswd-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: htpasswd-cdpzm
+  namespace: openshift-config
+type: Opaque
+data:
+  htpasswd: bWtpbWJlcmw6JDJ5JDA1JHpkbzB1STVQMTVyM3B6UzAzZ2gvSU9LT2kvbWJPcmhPSUhjVWdBRXczNXdNaktkUnlXOWJlCm1hcnJvYmVyOiQyeSQwNSRFZktZQUY5N2hlSkRySzdMcE9Xd2J1b1VKNDZ0ZlZaS1AzVnF3REpJL1haTlhxMDFocG8veQpqbGlta2E6JDJ5JDA1JHJSY1FaVGdZLmtPOGs0RUtOYnN0UU9aT0VqR1drVTlrT2lLeWhiemZjQzZUeFFIV0pSd3NPCmRhbW9saW5hOiQyeSQwNSRJTEZNUXZFT2pTdUtJTWFlOG1LYWhPZVJldG92Ty9RLzJiWU9rWUJobXQ5bEQ1dlIzMzdsaQo=
+---
+# Source: db-hackathon-2024/templates/secret-github.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github-secret
+  namespace: openshift-config
+type: Opaque
+data:
+  clientSecret: MWZkOGMzNTM1NTY4NDA4ODcxOWVlMmYzZWUzMjNjOGZhYjI4MDQ1Nwo=
+---
+# Source: db-hackathon-2024/templates/machine-autoscaler.yaml
+apiVersion: autoscaling.openshift.io/v1beta1
+kind: MachineAutoscaler
+metadata:
+  generation: 1
+  managedFields:
+    - apiVersion: autoscaling.openshift.io/v1beta1
+      manager: cluster-autoscaler-operator
+      operation: Update
+      subresource: status
+  name: dbh-98rq9-worker-c
+  namespace: openshift-machine-api
+spec:
+  maxReplicas: 12
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: dbh-98rq9-worker-c
+---
+# Source: db-hackathon-2024/templates/machine-autoscaler.yaml
+apiVersion: autoscaling.openshift.io/v1beta1
+kind: MachineAutoscaler
+metadata:
+  generation: 1
+  managedFields:
+    - apiVersion: autoscaling.openshift.io/v1beta1
+      manager: cluster-autoscaler-operator
+      operation: Update
+      subresource: status
+  name: dbh-98rq9-worker-b
+  namespace: openshift-machine-api
+spec:
+  maxReplicas: 12
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: dbh-98rq9-worker-b
+---
+# Source: db-hackathon-2024/templates/machine-autoscaler.yaml
+apiVersion: autoscaling.openshift.io/v1beta1
+kind: MachineAutoscaler
+metadata:
+  generation: 1
+  managedFields:
+    - apiVersion: autoscaling.openshift.io/v1beta1
+      manager: cluster-autoscaler-operator
+      operation: Update
+      subresource: status
+  name: dbh-98rq9-worker-a
+  namespace: openshift-machine-api
+spec:
+  maxReplicas: 12
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: machine.openshift.io/v1beta1
+    kind: MachineSet
+    name: dbh-98rq9-worker-a
+---
+# Source: db-hackathon-2024/templates/machineset.yaml
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  name: dbh-98rq9-worker-c
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: dbh-98rq9
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: dbh-98rq9
+      machine.openshift.io/cluster-api-machineset: dbh-98rq9-worker-c
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: dbh-98rq9
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: dbh-98rq9-worker-c
+    spec:
+      lifecycleHooks: {}
+      metadata: {}
+      providerSpec:
+        value:
+          machineType: n2-standard-8
+          userDataSecret:
+            name: worker-user-data
+          deletionProtection: false
+          networkInterfaces:
+            - network: dbh-98rq9-network
+              subnetwork: dbh-98rq9-worker-subnet
+          credentialsSecret:
+            name: gcp-cloud-credentials
+          zone: europe-west2-c
+          canIPForward: false
+          metadata:
+            creationTimestamp: null
+          projectID: hack-team-redhat2024
+          region: europe-west2
+          kind: GCPMachineProviderSpec
+          disks:
+            - autoDelete: true
+              boot: true
+              image: 
+              labels: {}
+              sizeGb: 128
+              type: pd-standard
+          tags:
+            - dbh-98rq9-worker
+          serviceAccounts:
+            - email: dbh-98rq9-w@hack-team-redhat2024.iam.gserviceaccount.com
+              scopes:
+                - 'https://www.googleapis.com/auth/cloud-platform'
+          apiVersion: machine.openshift.io/v1beta1
+          shieldedInstanceConfig: {}
+---
+# Source: db-hackathon-2024/templates/machineset.yaml
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  name: dbh-98rq9-worker-b
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: dbh-98rq9
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: dbh-98rq9
+      machine.openshift.io/cluster-api-machineset: dbh-98rq9-worker-b
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: dbh-98rq9
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: dbh-98rq9-worker-b
+    spec:
+      lifecycleHooks: {}
+      metadata: {}
+      providerSpec:
+        value:
+          machineType: n2-standard-8
+          userDataSecret:
+            name: worker-user-data
+          deletionProtection: false
+          networkInterfaces:
+            - network: dbh-98rq9-network
+              subnetwork: dbh-98rq9-worker-subnet
+          credentialsSecret:
+            name: gcp-cloud-credentials
+          zone: europe-west2-b
+          canIPForward: false
+          metadata:
+            creationTimestamp: null
+          projectID: hack-team-redhat2024
+          region: europe-west2
+          kind: GCPMachineProviderSpec
+          disks:
+            - autoDelete: true
+              boot: true
+              image: 
+              labels: {}
+              sizeGb: 128
+              type: pd-standard
+          tags:
+            - dbh-98rq9-worker
+          serviceAccounts:
+            - email: dbh-98rq9-w@hack-team-redhat2024.iam.gserviceaccount.com
+              scopes:
+                - 'https://www.googleapis.com/auth/cloud-platform'
+          apiVersion: machine.openshift.io/v1beta1
+          shieldedInstanceConfig: {}
+---
+# Source: db-hackathon-2024/templates/machineset.yaml
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  name: dbh-98rq9-worker-a
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: dbh-98rq9
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: dbh-98rq9
+      machine.openshift.io/cluster-api-machineset: dbh-98rq9-worker-a
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: dbh-98rq9
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: dbh-98rq9-worker-a
+    spec:
+      lifecycleHooks: {}
+      metadata: {}
+      providerSpec:
+        value:
+          machineType: n2-standard-8
+          userDataSecret:
+            name: worker-user-data
+          deletionProtection: false
+          networkInterfaces:
+            - network: dbh-98rq9-network
+              subnetwork: dbh-98rq9-worker-subnet
+          credentialsSecret:
+            name: gcp-cloud-credentials
+          zone: europe-west2-a
+          canIPForward: false
+          metadata:
+            creationTimestamp: null
+          projectID: hack-team-redhat2024
+          region: europe-west2
+          kind: GCPMachineProviderSpec
+          disks:
+            - autoDelete: true
+              boot: true
+              image: 
+              labels: {}
+              sizeGb: 128
+              type: pd-standard
+          tags:
+            - dbh-98rq9-worker
+          serviceAccounts:
+            - email: dbh-98rq9-w@hack-team-redhat2024.iam.gserviceaccount.com
+              scopes:
+                - 'https://www.googleapis.com/auth/cloud-platform'
+          apiVersion: machine.openshift.io/v1beta1
+          shieldedInstanceConfig: {}
+---
+# Source: db-hackathon-2024/templates/identity-providers.yaml
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+    - name: githubidp
+      mappingMethod: claim
+      type: GitHub
+      github:
+        clientID: 63f3b40a5c32586a4562
+        clientSecret:
+          name: github-secret
+        organizations:
+          - db-hackathon
+    - name: htpasswd
+      mappingMethod: claim
+      type: HTPasswd
+      htpasswd:
+        fileData:
+          name: htpasswd-cdpzm

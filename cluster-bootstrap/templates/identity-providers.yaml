@@ -1,0 +1,44 @@
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  {{- range .Values.identityProviders }}
+    - name: {{ .name }}
+      mappingMethod: {{ .mappingMethod }}
+      type: {{ .type }}
+  {{- if .github }}
+      github:
+        clientID: {{ .github.clientID }}
+        clientSecret:
+          name: {{ .github.clientSecret.name }}
+        organizations:
+  {{- range .github.organizations }}
+          - {{ . }}
+  {{- end }}
+  {{- end }}
+  {{- if .htpasswd }}
+      htpasswd:
+        fileData:
+          name: {{ .htpasswd.secretName }}
+  {{- end }}
+  {{- if .openID }}
+      openID:
+        clientID: {{ .openID.clientID }}
+        clientSecret:
+          name: {{ .openID.clientSecret.name }}
+        extraScopes:
+  {{- range .openID.extraScopes }}
+          - {{ . }}
+  {{- end }}
+        extraAuthorizeParameters:
+          include_granted_scopes: "{{ .openID.extraAuthorizeParameters.include_granted_scopes }}"
+        claims:
+          preferredUsername:
+  {{- range .openID.claims.preferredUsername }}
+          - {{ .}}
+  {{- end }}
+        issuer: {{ .openID.issuer }}
+  {{- end }}      
+  {{- end }}
